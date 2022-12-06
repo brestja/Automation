@@ -1,0 +1,176 @@
+{
+    "name": "Euler Explorer Prs",
+    "nodes": [
+      {
+        "parameters": {},
+        "name": "Start",
+        "type": "n8n-nodes-base.start",
+        "typeVersion": 1,
+        "position": [
+          380,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "channel": "#web-tech",
+          "text": "=Pull request {{$node[\"Github Trigger\"].json[\"body\"][\"action\"]}} by {{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"user\"][\"login\"]}}:  #{{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"number\"]}} \"{{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"title\"]}}\"\n{{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"html_url\"]}}",
+          "attachments": [],
+          "otherOptions": {}
+        },
+        "name": "Slack",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 1,
+        "position": [
+          1100,
+          60
+        ],
+        "credentials": {
+          "slackApi": {
+            "id": "21",
+            "name": "Slack Github Updates"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "authentication": "oAuth2",
+          "owner": "eulertools",
+          "repository": "euler-explorer",
+          "events": [
+            "pull_request"
+          ]
+        },
+        "name": "Github Trigger",
+        "type": "n8n-nodes-base.githubTrigger",
+        "typeVersion": 1,
+        "position": [
+          600,
+          240
+        ],
+        "webhookId": "4d0020dd-c70e-4581-ab68-3304cf095774",
+        "credentials": {
+          "githubOAuth2Api": {
+            "id": "22",
+            "name": "Github account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "dataType": "string",
+          "value1": "={{$node[\"Github Trigger\"].json[\"body\"][\"action\"]}}",
+          "rules": {
+            "rules": [
+              {
+                "value2": "opened"
+              },
+              {
+                "value2": "edited",
+                "output": 1
+              },
+              {
+                "value2": "review_requested",
+                "output": 2
+              }
+            ]
+          }
+        },
+        "name": "Switch",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 1,
+        "position": [
+          800,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "channel": "#web-tech",
+          "text": "=Review requested by {{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"user\"][\"login\"]}}:  #{{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"number\"]}} \"{{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"title\"]}}\"\n{{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"html_url\"]}}",
+          "attachments": [],
+          "otherOptions": {}
+        },
+        "name": "Slack1",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 1,
+        "position": [
+          1100,
+          440
+        ],
+        "credentials": {
+          "slackApi": {
+            "id": "21",
+            "name": "Slack Github Updates"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "channel": "#web-tech",
+          "text": "=Pull request {{$node[\"Github Trigger\"].json[\"body\"][\"action\"]}} by {{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"user\"][\"login\"]}}:  #{{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"number\"]}} \"{{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"title\"]}}\"\n{{$node[\"Github Trigger\"].json[\"body\"][\"pull_request\"][\"html_url\"]}}",
+          "attachments": [],
+          "otherOptions": {}
+        },
+        "name": "Slack2",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 1,
+        "position": [
+          1100,
+          240
+        ],
+        "credentials": {
+          "slackApi": {
+            "id": "21",
+            "name": "Slack Github Updates"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Github Trigger": {
+        "main": [
+          [
+            {
+              "node": "Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch": {
+        "main": [
+          [
+            {
+              "node": "Slack",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Slack2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Slack1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": true,
+    "settings": {
+      "timezone": "Europe/Madrid",
+      "saveExecutionProgress": true,
+      "saveManualExecutions": true,
+      "errorWorkflow": "23"
+    },
+    "id": 15
+  }
