@@ -1,0 +1,347 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "channel": "#general",
+          "text": "=• {{$node[\"Set1\"].json[\"Empleado\"]}}",
+          "attachments": [],
+          "otherOptions": {}
+        },
+        "name": "General",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 1,
+        "position": [
+          1200,
+          900
+        ],
+        "credentials": {
+          "slackApi": {
+            "id": "3",
+            "name": "Slack account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "name": "Set2",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [
+          920,
+          920
+        ]
+      },
+      {
+        "parameters": {
+          "channel": "#general",
+          "text": "=• {{$node[\"Set1\"].json[\"Empleado\"]}}",
+          "attachments": [],
+          "otherOptions": {}
+        },
+        "name": "General (Range)",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 1,
+        "position": [
+          1180,
+          720
+        ],
+        "credentials": {
+          "slackApi": {
+            "id": "3",
+            "name": "Slack account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "name": "Set1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [
+          920,
+          740
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{$node[\"Date & Time1\"].json[\"date\"]}}",
+                "value2": "={{$node[\"Set\"].json[\"Fecha\"]}}"
+              }
+            ]
+          }
+        },
+        "name": "IF",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          600,
+          800
+        ]
+      },
+      {
+        "parameters": {
+          "keepOnlySet": true,
+          "values": {
+            "string": [
+              {
+                "name": "Fecha",
+                "value": "={{$json[\"2\"]}}"
+              },
+              {
+                "name": "Empleado",
+                "value": "={{$json[\"4\"]}}"
+              },
+              {
+                "name": "Hasta",
+                "value": "={{$json[\"3\"]}}"
+              }
+            ],
+            "number": [
+              {
+                "name": "Cantidad_dias",
+                "value": "={{$json[\"7\"]}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Set",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [
+          400,
+          800
+        ]
+      },
+      {
+        "parameters": {
+          "batchSize": 1,
+          "options": {}
+        },
+        "name": "SplitInBatches",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 1,
+        "position": [
+          220,
+          800
+        ]
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "data.data",
+          "options": {}
+        },
+        "name": "Item Lists",
+        "type": "n8n-nodes-base.itemLists",
+        "typeVersion": 1,
+        "position": [
+          20,
+          800
+        ]
+      },
+      {
+        "parameters": {
+          "requestMethod": "POST",
+          "url": "https://app.holded.com/team/leaves/load",
+          "responseFormat": "string",
+          "options": {},
+          "headerParametersUi": {
+            "parameter": [
+              {
+                "name": "Cookie",
+                "value": "OptanonConsent=isIABGlobal=false&datestamp=Mon+Aug+08+2022+11%3A35%3A22+GMT-0300+(hora+est%C3%A1ndar+de+Argentina)&version=6.16.0&hosts=&landingPath=https%3A%2F%2Fwww.holded.com%2F&groups=C0002%3A1%2CC0001%3A1%2CC0004%3A1%2CC0003%3A1; PHPSESSID=2d449c9e14c9f076c50d851d9e9c7d79; _BEAMER_BOOSTED_ANNOUNCEMENT_DATE_GjNAaLnU30253=2022-10-06T12:08:32.254Z; _BEAMER_DATE_GjNAaLnU30253=2022-08-03T14:25:49.780Z; _BEAMER_FILTER_BY_URL_GjNAaLnU30253=false; _BEAMER_FIRST_VISIT_GjNAaLnU30253=2022-07-27T15:30:59.985Z; _BEAMER_LAST_UPDATE_GjNAaLnU30253=1665620961926; _BEAMER_USER_ID_GjNAaLnU30253=3998bdd7-b024-47c0-8d4f-38dc84a1a1a7; __gtm_clientId=1884566051.1658935809; __gtm_first_int=http_referer%3Anull%2C%20landing_page%3Ahttps%3A%2F%2Fapp.holded.com%2Flogin%3Furl_after_login%3D%252Fboards%253Flang%253Den%2C%20landing_date%3A1658935808552; __gtm_user_mrr=172; __gtm_user_name=José; __hssc=160523682.2.1665620940655; __hssrc=1; __hstc=160523682.6a8f5eb9df5022d0db9e9f93df8bc55d.1658935810367.1665605993961.1665620940655.127; _amplitude_deviceid=tLCu8tVGA_8yUJx6m9zJPN; _amplitude_sessionid=1665620938775; _fbp=fb.1.1658935808929.1432085206; _ga=GA1.1.1884566051.1658935809; _ga_P5G2YFXN2W=GS1.1.1665620938.145.1.1665620958.0.0.0; _gcl_au=1.1.1489254274.1658935808; _gid=GA1.2.269202033.1665356778; _hjSessionUser_1006434=eyJpZCI6IjNiYWZmYjE1LWRjZDEtNTIxZS04ZGQ4LTFjNTIxYTc3ZDg4NiIsImNyZWF0ZWQiOjE2NTg5MzU4MDkwOTEsImV4aXN0aW5nIjp0cnVlfQ==; _lfa=LF1.1.a33f30837e20663a.1663939674214; _tt_enable_cookie=1; _ttp=5a910cba-3336-440c-8b01-cc8cc1374bde; _uetsid=fb3eb510482611edb73e055cf6751b6c; _uetvid=ff7095800dc011edb8f74def92dfd459; ab_abtest_signup=v1; amp_faba0f=tLCu8tVGA_8yUJx6m9zJPN.NjIzOWNkOGRlNzUyZjE1NDc2NTNmNDhh..1gf7bt40n.1gf7btp0m.sh.1e.tv; hat=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhcHAuaG9sZGVkLmNvbSIsImlhdCI6MTY2NTYyMDk1MCwibmJmIjoxNjY1NjIwOTUwLCJleHAiOjE2NzU5ODg5NTAsInVzZXIiOiI2MjM5Y2Q4ZGU3NTJmMTU0NzY1M2Y0OGEiLCJwbGF0Zm9ybSI6IndlYiIsImlkIjoiMDFnZjdieGZmbnBhNXYxN3MyNzVnZDdhazcifQ.Xih4bUx7umNojkOYvXElO40rGQR5vVMaIt0y_OoVS0I; hubspotutk=6a8f5eb9df5022d0db9e9f93df8bc55d; intercom-id-gwbpci68=643e4932-91d4-4c5d-a7a8-cd45477260eb; intercom-session-gwbpci68=MWQ3YjFremdEZTRDeDZuQVdHVnhMRTByYW05MDA5UnhBMTV5WlpVQXkybHRhQnp2VjlwOWFLN0NIMGU0ZGpPay0tVTdGUmtVSXhnYWJHVW9oT0wyaHVMUT09--8b40b4d9a05d70f3c10f48ea6af71d6bc1eda421; lang=en; accountid=622f7139a6b37d22dc590404; gemsintro=1659097647; navgem-banking=1; navgem-hr=1; navgem-invoicing=1; navgem-projects=1; outbrain_cid_fetch=true; skipInitSteps_62383b49253a013d296992ee=1; skipInitSteps_6239cd8de752f1547653f48a=1; skipInitSurvey_62383b49253a013d296992ee_hello1=1; skipInitSurvey_6239cd8de752f1547653f48a_hello1=1; surveys_hello1=%7B%22_id%22%3A%7B%22%24oid%22%3A%226239ce4490a7174b3b7a2cbd%22%7D%2C%22acc%22%3A%7B%22%24oid%22%3A%226239cdfa90a51c54767ccfe0%22%7D%2C%22user%22%3A%7B%22%24oid%22%3A%226239cd8de752f1547653f48a%22%7D%2C%22key%22%3A%22hello1%22%2C%22fields%22%3A%7B%22usedBefore%22%3A%22never%22%2C%22businessType%22%3A%22both%22%2C%22mainActivity%22%3A%22all%22%2C%22startWhen%22%3A%22comingmonths%22%2C%22currentTool%22%3A%22spreadsheet%22%7D%2C%22accountType%22%3A%22freelance%22%2C%22createdAt%22%3A1647955524%7D; teamzone-show-private-info=0"
+              }
+            ]
+          }
+        },
+        "name": "HTTP Request",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [
+          -160,
+          800
+        ],
+        "notesInFlow": false
+      },
+      {
+        "parameters": {
+          "value": "={{$json[\"date\"]}}",
+          "dataPropertyName": "date",
+          "custom": true,
+          "toFormat": "DD/MM/YYYY",
+          "options": {
+            "fromFormat": "="
+          }
+        },
+        "name": "Date & Time1",
+        "type": "n8n-nodes-base.dateTime",
+        "typeVersion": 1,
+        "position": [
+          -340,
+          800
+        ]
+      },
+      {
+        "parameters": {
+          "functionCode": "var date = new Date().toISOString();\n\n\n\nitems[0].json.date = date;\n\n\nreturn items;"
+        },
+        "name": "Function",
+        "type": "n8n-nodes-base.function",
+        "typeVersion": 1,
+        "position": [
+          -540,
+          800
+        ]
+      },
+      {
+        "parameters": {
+          "triggerTimes": {
+            "item": [
+              {
+                "hour": 5,
+                "minute": 30
+              }
+            ]
+          }
+        },
+        "name": "Cron",
+        "type": "n8n-nodes-base.cron",
+        "typeVersion": 1,
+        "position": [
+          -800,
+          800
+        ]
+      }
+    ],
+    "connections": {
+      "Set2": {
+        "main": [
+          [
+            {
+              "node": "General",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set1": {
+        "main": [
+          [
+            {
+              "node": "General (Range)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF": {
+        "main": [
+          [
+            {
+              "node": "Set1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set": {
+        "main": [
+          [
+            {
+              "node": "IF",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "SplitInBatches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SplitInBatches": {
+        "main": [
+          [
+            {
+              "node": "Set",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Item Lists": {
+        "main": [
+          [
+            {
+              "node": "SplitInBatches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Item Lists",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Date & Time1": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Function": {
+        "main": [
+          [
+            {
+              "node": "Date & Time1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cron": {
+        "main": [
+          [
+            {
+              "node": "Function",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  }
