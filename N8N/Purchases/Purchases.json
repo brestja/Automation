@@ -1,0 +1,287 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "authentication": "oAuth2",
+          "operation": "append",
+          "sheetId": "1eZthTY4Vpr6AvzXnvXiRSn0Lcat2WW6_KqBxAfem6CM",
+          "range": "n8n Compras!A:G",
+          "options": {}
+        },
+        "name": "Google Sheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 1,
+        "position": [
+          1720,
+          320
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "35",
+            "name": "Dev"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "amount": 0.1,
+          "unit": "seconds"
+        },
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1,
+        "position": [
+          1560,
+          320
+        ],
+        "webhookId": "53075884-4518-49d3-8f65-18b2119a3616"
+      },
+      {
+        "parameters": {
+          "keepOnlySet": true,
+          "values": {
+            "string": [
+              {
+                "name": "Fecha",
+                "value": "={{$json[\"data\"]}}"
+              },
+              {
+                "name": "Numero interno",
+                "value": "={{$json[\"docNumber\"]}}"
+              },
+              {
+                "name": "Proveedor",
+                "value": "={{$json[\"contactName\"]}}"
+              },
+              {
+                "name": "Descripcion",
+                "value": "={{$node[\"HTTP Request1\"].json[\"tags\"][1]}}"
+              },
+              {
+                "name": "Id de Cuenta",
+                "value": "={{$node[\"SplitInBatches1\"].json[\"products\"][0][\"account\"]}}"
+              }
+            ],
+            "number": [
+              {
+                "name": "Subtotal",
+                "value": "={{$json[\"subtotal\"]}}"
+              },
+              {
+                "name": "Total",
+                "value": "={{$json[\"total\"]}}"
+              },
+              {
+                "name": "Estado",
+                "value": "={{$json[\"status\"]}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Set1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [
+          1400,
+          320
+        ]
+      },
+      {
+        "parameters": {
+          "value": "={{$json[\"data\"]}}",
+          "custom": true,
+          "toFormat": "DD/MM/YYYY",
+          "options": {}
+        },
+        "name": "Date & Time2",
+        "type": "n8n-nodes-base.dateTime",
+        "typeVersion": 1,
+        "position": [
+          1260,
+          320
+        ]
+      },
+      {
+        "parameters": {
+          "action": "calculate",
+          "value": "={{$json[\"data\"]}}",
+          "duration": 1,
+          "options": {
+            "fromFormat": "DD/MM/YYYY"
+          }
+        },
+        "name": "Date & Time",
+        "type": "n8n-nodes-base.dateTime",
+        "typeVersion": 1,
+        "position": [
+          1120,
+          320
+        ]
+      },
+      {
+        "parameters": {
+          "value": "={{$json[\"date\"]}}",
+          "custom": true,
+          "toFormat": "DD/MM/YYYY",
+          "options": {}
+        },
+        "name": "Date & Time1",
+        "type": "n8n-nodes-base.dateTime",
+        "position": [
+          980,
+          320
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "batchSize": 1,
+          "options": {
+            "reset": false
+          }
+        },
+        "name": "SplitInBatches1",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 1,
+        "position": [
+          820,
+          320
+        ]
+      },
+      {
+        "parameters": {
+          "url": "https://api.holded.com/api/invoicing/v1/documents/purchase",
+          "options": {
+            "splitIntoItems": true
+          },
+          "headerParametersUi": {
+            "parameter": [
+              {
+                "name": "key",
+                "value": "e05e43ae75eaa5957443a3fc3bbe50fb"
+              }
+            ]
+          }
+        },
+        "name": "HTTP Request1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [
+          660,
+          320
+        ]
+      },
+      {
+        "parameters": {},
+        "name": "Start",
+        "type": "n8n-nodes-base.start",
+        "typeVersion": 1,
+        "position": [
+          500,
+          320
+        ]
+      }
+    ],
+    "connections": {
+      "Google Sheets": {
+        "main": [
+          [
+            {
+              "node": "SplitInBatches1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Google Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set1": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Date & Time2": {
+        "main": [
+          [
+            {
+              "node": "Set1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Date & Time": {
+        "main": [
+          [
+            {
+              "node": "Date & Time2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Date & Time1": {
+        "main": [
+          [
+            {
+              "node": "Date & Time",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SplitInBatches1": {
+        "main": [
+          [
+            {
+              "node": "Date & Time1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request1": {
+        "main": [
+          [
+            {
+              "node": "SplitInBatches1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  }
