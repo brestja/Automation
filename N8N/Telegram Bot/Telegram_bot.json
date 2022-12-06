@@ -1,0 +1,652 @@
+{
+    "name": "Telegram Bot",
+    "nodes": [
+      {
+        "parameters": {},
+        "name": "Start",
+        "type": "n8n-nodes-base.start",
+        "typeVersion": 1,
+        "position": [
+          80,
+          340
+        ]
+      },
+      {
+        "parameters": {
+          "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"]}}",
+          "text": "=I can't find information about this price in our database.",
+          "additionalFields": {}
+        },
+        "name": "Handler2",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1,
+        "position": [
+          1240,
+          720
+        ],
+        "credentials": {
+          "telegramApi": {
+            "id": "3",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"]}}",
+          "text": "={{$json[\"data\"][$node[\"Modify the command1\"].json[\"newtext\"]][\"name\"].toUpperCase()}} - ${{$json[\"data\"][$node[\"Modify the command1\"].json[\"newtext\"]][\"symbol\"]}}\n⚡ Network: CoinMarketCap\n💰 Price: ${{$node[\"CoinMarketCap\"].json[\"data\"][$node[\"Modify the command1\"].json[\"newtext\"]][\"quote\"][\"USD\"][\"price\"].toFixed(6)}}\n📉 1h: {{$node[\"CoinMarketCap\"].json[\"data\"][$node[\"Modify the command1\"].json[\"newtext\"]][\"quote\"][\"USD\"][\"percent_change_1h\"].toFixed(2)}}%\n📈 24h: {{$node[\"CoinMarketCap\"].json[\"data\"][$node[\"Modify the command1\"].json[\"newtext\"]][\"quote\"][\"USD\"][\"percent_change_24h\"].toFixed(2)}}%\n📈 7d: {{$node[\"CoinMarketCap\"].json[\"data\"][$node[\"Modify the command1\"].json[\"newtext\"]][\"quote\"][\"USD\"][\"percent_change_7d\"].toFixed(2)}}%\n📊 Volume: ${{$node[\"CoinMarketCap\"].json[\"data\"][$node[\"Modify the command1\"].json[\"newtext\"]][\"quote\"][\"USD\"][\"volume_24h\"].toLocaleString(\"en-US\")}}\n💎 Market Cap (FDV): ${{$node[\"CoinMarketCap\"].json[\"data\"][$node[\"Modify the command1\"].json[\"newtext\"]][\"quote\"][\"USD\"][\"fully_diluted_market_cap\"].toLocaleString(\"en-US\")}}",
+          "additionalFields": {}
+        },
+        "name": "Telegram",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1,
+        "position": [
+          1240,
+          540
+        ],
+        "credentials": {
+          "telegramApi": {
+            "id": "3",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "string": [
+              {
+                "value1": "={{$node[\"CoinMarketCap\"].json[\"status\"][\"credit_count\"]}}",
+                "value2": 1
+              }
+            ]
+          }
+        },
+        "name": "IF2",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          1020,
+          620
+        ]
+      },
+      {
+        "parameters": {
+          "url": "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?",
+          "options": {},
+          "headerParametersUi": {
+            "parameter": [
+              {
+                "name": "X-CMC_PRO_API_KEY",
+                "value": "6029937a-7a95-42f3-845b-b9dc4bd9d4e7"
+              }
+            ]
+          },
+          "queryParametersUi": {
+            "parameter": [
+              {
+                "name": "symbol",
+                "value": "={{$node[\"Modify the command1\"].json[\"newtext\"]}}"
+              }
+            ]
+          }
+        },
+        "name": "CoinMarketCap",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [
+          820,
+          620
+        ]
+      },
+      {
+        "parameters": {
+          "keepOnlySet": true,
+          "values": {
+            "string": [
+              {
+                "name": "newtext",
+                "value": "={{$node[\"Get command1\"].json[\"text\"].slice(5)}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Modify the command1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [
+          620,
+          620
+        ]
+      },
+      {
+        "parameters": {
+          "keepOnlySet": true,
+          "values": {
+            "string": [
+              {
+                "name": "text",
+                "value": "={{$json[\"message\"][\"text\"].toUpperCase()}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Get command1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [
+          420,
+          620
+        ]
+      },
+      {
+        "parameters": {
+          "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"]}}",
+          "text": "={{$node[\"Modify the command\"].json[\"newtext\"].toUpperCase()}} - {{$node[\"CoinGecko\"].json[\"symbol\"].toUpperCase()}}\n💰 Price: ${{$node[\"CoinGecko\"].json[\"market_data\"][\"current_price\"][\"usd\"].toLocaleString(\"en-US\")}}\n⚡ Network CoinGecko \n⬆ 24h High: ${{$node[\"CoinGecko\"].json[\"market_data\"][\"high_24h\"][\"usd\"].toLocaleString(\"en-US\")}}\n⬇ 24h Low: ${{$node[\"CoinGecko\"].json[\"market_data\"][\"low_24h\"][\"usd\"].toLocaleString(\"en-US\")}}\n📊 Volume: ${{$node[\"CoinGecko\"].json[\"market_data\"][\"total_volume\"][\"usd\"].toLocaleString(\"en-US\")}} \n💎 Market Cap (FDV): ${{$node[\"CoinGecko\"].json[\"market_data\"][\"fully_diluted_valuation\"][\"usd\"].toLocaleString(\"en-US\")}}\n💎 Market Cap: ${{$node[\"CoinGecko\"].json[\"market_data\"][\"market_cap\"][\"usd\"].toLocaleString(\"en-US\")}}",
+          "additionalFields": {}
+        },
+        "name": "Telegram1",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1,
+        "position": [
+          1020,
+          360
+        ],
+        "credentials": {
+          "telegramApi": {
+            "id": "3",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "=https://api.coingecko.com/api/v3/coins/{{$node[\"Modify the command\"].json[\"newtext\"]}}?tickers=false&market_data=true&community_data=false&developer_data=true&sparkline=true",
+          "options": {}
+        },
+        "name": "CoinGecko",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [
+          820,
+          360
+        ]
+      },
+      {
+        "parameters": {
+          "keepOnlySet": true,
+          "values": {
+            "string": [
+              {
+                "name": "newtext",
+                "value": "={{$node[\"Get command\"].json[\"text\"].slice(4)}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Modify the command",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [
+          620,
+          360
+        ]
+      },
+      {
+        "parameters": {
+          "keepOnlySet": true,
+          "values": {
+            "string": [
+              {
+                "name": "text",
+                "value": "={{$json[\"message\"][\"text\"]}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Get command",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [
+          420,
+          360
+        ]
+      },
+      {
+        "parameters": {
+          "dataType": "string",
+          "value1": "={{$json[\"message\"][\"text\"]}}",
+          "rules": {
+            "rules": [
+              {
+                "operation": "contains",
+                "value2": "/cg"
+              },
+              {
+                "operation": "contains",
+                "value2": "/cmc",
+                "output": 1
+              },
+              {
+                "operation": "contains",
+                "value2": "/e",
+                "output": 2
+              }
+            ]
+          }
+        },
+        "name": "Switch",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 1,
+        "position": [
+          240,
+          620
+        ]
+      },
+      {
+        "parameters": {
+          "updates": [
+            "message"
+          ],
+          "additionalFields": {}
+        },
+        "name": "Telegram Trigger",
+        "type": "n8n-nodes-base.telegramTrigger",
+        "typeVersion": 1,
+        "position": [
+          40,
+          620
+        ],
+        "webhookId": "9409e133-ef74-4e92-9e6b-72bac7d32fd5",
+        "credentials": {
+          "telegramApi": {
+            "id": "3",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"]}}",
+          "text": "=ey! did you mean\n{{$node[\"Euler Tools\"].json[\"hits\"][1][\"_source\"][\"name\"]}} - /e {{$node[\"Euler Tools\"].json[\"hits\"][1][\"_source\"][\"symbol\"].toUpperCase()}} ?",
+          "additionalFields": {}
+        },
+        "name": "Handler",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1,
+        "position": [
+          1500,
+          1140
+        ],
+        "credentials": {
+          "telegramApi": {
+            "id": "3",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"]}}",
+          "text": "={{$node[\"Euler Tools\"].json[\"hits\"][0][\"_source\"][\"name\"]}} - ${{$node[\"Euler Tools\"].json[\"hits\"][0][\"_source\"][\"symbol\"].toUpperCase()}}\n⚡ Network: Euler Tools\n💰 Price: ${{$node[\"Euler Tools\"].json[\"hits\"][0][\"_source\"][\"price_usd\"].toLocaleString(\"en-US\")}}",
+          "additionalFields": {}
+        },
+        "name": "Telegram4",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1,
+        "position": [
+          1280,
+          1240
+        ],
+        "credentials": {
+          "telegramApi": {
+            "id": "3",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"]}}",
+          "text": "=I can't find information about this price in our database. Try again please.",
+          "additionalFields": {}
+        },
+        "name": "Handler1",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1,
+        "position": [
+          1280,
+          1080
+        ],
+        "credentials": {
+          "telegramApi": {
+            "id": "3",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "number": [
+              {
+                "value1": "={{$node[\"Euler Tools\"].json[\"hits\"].length}}",
+                "operation": "equal"
+              }
+            ]
+          }
+        },
+        "name": "IF1",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          1080,
+          1160
+        ]
+      },
+      {
+        "parameters": {
+          "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"]}}",
+          "text": "={{$node[\"Euler Tools\"].json[\"hits\"][0][\"_source\"][\"name\"]}} - ${{$node[\"Euler Tools\"].json[\"hits\"][0][\"_source\"][\"symbol\"].toUpperCase()}}\n⚡ Network: Euler Tools\n💰 Price: ${{$node[\"Euler Tools\"].json[\"hits\"][0][\"_source\"][\"price_usd\"].toLocaleString(\"en-US\")}}",
+          "additionalFields": {}
+        },
+        "name": "Telegram3",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1,
+        "position": [
+          1080,
+          980
+        ],
+        "credentials": {
+          "telegramApi": {
+            "id": "3",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "number": [
+              {
+                "value1": "={{$node[\"Euler Tools\"].json[\"hits\"].length}}",
+                "operation": "equal",
+                "value2": 1
+              }
+            ]
+          }
+        },
+        "name": "IF",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          860,
+          980
+        ]
+      },
+      {
+        "parameters": {
+          "requestMethod": "POST",
+          "url": "https://catalog.dev.euler.tools/bsc/tokens",
+          "jsonParameters": true,
+          "options": {},
+          "bodyParametersJson": "= {     \"query\": {         \"bool\": {             \"filter\": {                 \"bool\": {                     \"should\": [                         {                             \"match\": {                                 \"name\": \"{{$node[\"Modify the command2\"].json[\"newtext\"]}}\"                             }                         },                         {                             \"match\": {                                 \"symbol\": \"{{$node[\"Modify the command2\"].json[\"newtext\"]}}\"                             }                         },                         {                             \"match\": {                                 \"address\": \"{{$node[\"Modify the command2\"].json[\"newtext\"]}}\"                             }                         }                     ]                 }             },             \"must\": [                 {                     \"terms\": {                         \"category\": [                             \"token\"                         ]                     }                 },                 {                     \"exists\": {                         \"field\": \"coin\"                     }                 }             ]         }     },     \"size\": 500,     \"from\": 0,     \"sort\": [         {             \"update_date\": {                 \"order\": \"desc\"             }         },         {             \"market_cap\": {                 \"order\": \"desc\"             }         }     ]\n\n}"
+        },
+        "name": "Euler Tools",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [
+          660,
+          980
+        ]
+      },
+      {
+        "parameters": {
+          "keepOnlySet": true,
+          "values": {
+            "string": [
+              {
+                "name": "newtext",
+                "value": "={{$node[\"Get command2\"].json[\"text\"].slice(3).toUpperCase()}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Modify the command2",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [
+          460,
+          980
+        ]
+      },
+      {
+        "parameters": {
+          "keepOnlySet": true,
+          "values": {
+            "string": [
+              {
+                "name": "text",
+                "value": "={{$json[\"message\"][\"text\"]}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Get command2",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [
+          260,
+          980
+        ]
+      }
+    ],
+    "connections": {
+      "IF2": {
+        "main": [
+          [
+            {
+              "node": "Telegram",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Handler2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "CoinMarketCap": {
+        "main": [
+          [
+            {
+              "node": "IF2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Modify the command1": {
+        "main": [
+          [
+            {
+              "node": "CoinMarketCap",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get command1": {
+        "main": [
+          [
+            {
+              "node": "Modify the command1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "CoinGecko": {
+        "main": [
+          [
+            {
+              "node": "Telegram1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Modify the command": {
+        "main": [
+          [
+            {
+              "node": "CoinGecko",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get command": {
+        "main": [
+          [
+            {
+              "node": "Modify the command",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch": {
+        "main": [
+          [
+            {
+              "node": "Get command",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Get command1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Telegram Trigger": {
+        "main": [
+          [
+            {
+              "node": "Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Telegram4": {
+        "main": [
+          [
+            {
+              "node": "Handler",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF1": {
+        "main": [
+          [
+            {
+              "node": "Handler1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Telegram4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF": {
+        "main": [
+          [
+            {
+              "node": "Telegram3",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "IF1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Euler Tools": {
+        "main": [
+          [
+            {
+              "node": "IF",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Modify the command2": {
+        "main": [
+          [
+            {
+              "node": "Euler Tools",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get command2": {
+        "main": [
+          [
+            {
+              "node": "Modify the command2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": true,
+    "settings": {
+      "timezone": "Europe/Madrid",
+      "saveExecutionProgress": true,
+      "saveManualExecutions": true
+    },
+    "id": 6
+  }
