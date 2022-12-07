@@ -1,0 +1,271 @@
+{
+    "name": "Extract",
+    "nodes": [
+      {
+        "parameters": {},
+        "name": "Start",
+        "type": "n8n-nodes-base.start",
+        "typeVersion": 1,
+        "position": [
+          460,
+          120
+        ]
+      },
+      {
+        "parameters": {
+          "authentication": "oAuth2",
+          "operation": "append",
+          "sheetId": "1eZthTY4Vpr6AvzXnvXiRSn0Lcat2WW6_KqBxAfem6CM",
+          "range": "n8n Extracto!A:D",
+          "options": {}
+        },
+        "name": "Google Sheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 1,
+        "position": [
+          1740,
+          340
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "9",
+            "name": "Google Sheets account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "amount": 0.5,
+          "unit": "seconds"
+        },
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1,
+        "position": [
+          1520,
+          340
+        ],
+        "webhookId": "304c7106-1108-4632-927a-6ef02256b3c7"
+      },
+      {
+        "parameters": {
+          "keepOnlySet": true,
+          "values": {
+            "string": [
+              {
+                "name": "Descripcion",
+                "value": "={{$json[\"description\"]}}"
+              },
+              {
+                "name": "Saldo",
+                "value": "={{$json[\"balance\"]}}"
+              },
+              {
+                "name": "Fecha",
+                "value": "={{$node[\"Date & Time\"].json[\"data\"]}}"
+              },
+              {
+                "name": "ID",
+                "value": "={{$json[\"id\"]}}"
+              }
+            ],
+            "number": [
+              {
+                "name": "Importe",
+                "value": "={{$json[\"amount\"]}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Set1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 1,
+        "position": [
+          1340,
+          340
+        ]
+      },
+      {
+        "parameters": {
+          "value": "={{$json[\"date\"]}}",
+          "custom": true,
+          "toFormat": "DD/MM/YYYY",
+          "options": {}
+        },
+        "name": "Date & Time",
+        "type": "n8n-nodes-base.dateTime",
+        "typeVersion": 1,
+        "position": [
+          1140,
+          340
+        ]
+      },
+      {
+        "parameters": {
+          "batchSize": 1,
+          "options": {
+            "reset": false
+          }
+        },
+        "name": "SplitInBatches1",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 1,
+        "position": [
+          940,
+          340
+        ]
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "data",
+          "options": {}
+        },
+        "name": "Item Lists1",
+        "type": "n8n-nodes-base.itemLists",
+        "typeVersion": 1,
+        "position": [
+          760,
+          340
+        ]
+      },
+      {
+        "parameters": {
+          "url": "https://app.holded.com/internal/banking/account/62383f9c4ce99c1121458858/transactions?page=1&pageSize=200",
+          "options": {
+            "splitIntoItems": false
+          },
+          "headerParametersUi": {
+            "parameter": [
+              {
+                "name": "cookie",
+                "value": "intercom-id-gwbpci68=25eb3e0d-539e-464d-a500-062ffebdeb95; _gcl_au=1.1.1439164570.1647951091; __gtm_first_int=http_referer%3Anull%2C%20landing_page%3Ahttps%3A%2F%2Fwww.holded.com%2F%2C%20landing_date%3A1647951090669; _fbp=fb.1.1647951091462.1766732907; _hjSessionUser_1006434=eyJpZCI6ImE0YzAyYmIzLTgxMjQtNWQ0Yi1hMjYxLWNkMjVhNzc5OWE4OSIsImNyZWF0ZWQiOjE2NDc5NTEwOTE5NDAsImV4aXN0aW5nIjp0cnVlfQ==; hubspotutk=9cae2dcff6eb807f2b62b407749bbc10; refiner_cookie_uuid=f08a27b7-e984-ef7b-1836-3c2a60c63d0c; _BEAMER_USER_ID_GjNAaLnU30253=e8f41268-10cb-4894-adad-c5d1085f2372; _BEAMER_FIRST_VISIT_GjNAaLnU30253=2022-03-22T12:22:45.352Z; navgem-invoicing=1; navgem-projects=1; gemsintro=1647953387; _clck=1bunw0l|1|f02|0; skipInitSurvey_6239bf75d2301025832341be_hello1=1; NPS_EU-1c964f4e_last_seen=1651512356787; _BEAMER_BOOSTED_ANNOUNCEMENT_DATE_GjNAaLnU30253=2022-05-02T17:25:59.131Z; skipInitSurvey_62701513c041dcaeb60f70e3_hello1=1; navgem-banking=1; navgem-hr=1; _gid=GA1.2.1495349579.1652790539; surveys_hello1=%7B%22_id%22%3A%7B%22%24oid%22%3A%226239bfb527395147bf11c9f4%22%7D%2C%22acc%22%3A%7B%22%24oid%22%3A%226239bf8e1fc49a0c6c2a2737%22%7D%2C%22user%22%3A%7B%22%24oid%22%3A%226239bf75d2301025832341be%22%7D%2C%22key%22%3A%22hello1%22%2C%22fields%22%3A%7B%22usedBefore%22%3A%22never%22%2C%22businessType%22%3A%22both%22%2C%22mainActivity%22%3A%22projects%22%2C%22startWhen%22%3A%22browsing%22%2C%22currentTool%22%3A%22spreadsheet%22%7D%2C%22accountType%22%3A%22freelance%22%2C%22createdAt%22%3A1647951797%7D; __stripe_mid=d8efda90-cffa-4342-b323-6ac199452a4715f20d; teamzone-show-private-info=0; contacts-filter-type=persons; _ga=GA1.2.1917020513.1647950977; __gtm_clientId=1917020513.1647950977; OptanonAlertBoxClosed=2022-05-18T13:27:35.875Z; OptanonConsent=isIABGlobal=false&datestamp=Wed+May+18+2022+10%3A27%3A36+GMT-0300+(hora+est%C3%A1ndar+de+Argentina)&version=6.16.0&hosts=&landingPath=NotLandingPage&groups=C0002%3A1%2CC0001%3A1%2CC0004%3A1%2CC0003%3A1&geolocation=AR%3BB&AwaitingReconsent=false; __hssrc=1; lang=es; PHPSESSID=814f75c99b7de8a0f1c6e69d7c7c1426; abtest_signup=v1; _ga_P5G2YFXN2W=GS1.1.1652880455.11.1.1652880472.0; _amplitude_deviceid=L4ncP4Dzm3rJXiIvbNw8zg; hat=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhcHAuaG9sZGVkLmNvbSIsImlhdCI6MTY1Mjg4MDU0MiwibmJmIjoxNjUyODgwNTQyLCJleHAiOjE2NjMyNDg1NDIsInVzZXIiOiI2MjM4M2I0OTI1M2EwMTNkMjk2OTkyZWUiLCJwbGF0Zm9ybSI6IndlYiIsImlkIjoiMDFnM2JucTJld3ExbnA0cWQ4djF2ZXo5Z3EifQ._epYqsLxaOd9iv6VcreKAVNDLf2tl382dm-NPjMAdbk; __gtm_user_name=Natalia Estefania LelÃ¹; __gtm_user_mrr=148; _hjCachedUserAttributes=eyJhdHRyaWJ1dGVzIjp7ImFjb3VudF9jb3VudHJ5IjoiRVMiLCJlbWFpbCI6Im5hdGFsaWFAZXVsZXIudG9vbHMiLCJucHMiOi0xLCJ1c2VyX2xhbmd1YWdlIjoiZXMiLCJ1c2VyX3JvbGUiOiJhZG1pbiIsInVzZXJfdG90YWxfbXJyIjoxNDh9LCJ1c2VySWQiOiI2MjM4M2I0OTI1M2EwMTNkMjk2OTkyZWUifQ==; expenses_filter=%7B%22start%22%3A%2231%2F12%2F2021%22%2C%22end%22%3A%2230%2F12%2F2022%22%2C%22filters%22%3A%22%7B%7D%22%7D; _amplitude_sessionid=1652893890669; _hjSession_1006434=eyJpZCI6IjdhMWU0N2U4LTBlMjctNGRkNi1iNDRkLTc4YmFiNzIwZTgwNCIsImNyZWF0ZWQiOjE2NTI4OTM4OTE4OTIsImluU2FtcGxlIjpmYWxzZX0=; _hjAbsoluteSessionInProgress=1; __hstc=160523682.9cae2dcff6eb807f2b62b407749bbc10.1647951094952.1652887870811.1652893892893.16; _BEAMER_FILTER_BY_URL_GjNAaLnU30253=false; _hjIncludedInPageviewSample=1; _hjIncludedInSessionSample=0; accountid=622f7139a6b37d22dc590404; amp_faba0f=L4ncP4Dzm3rJXiIvbNw8zg.NjIzODNiNDkyNTNhMDEzZDI5Njk5MmVl..1g3c2ee3d.1g3c462l5.96.a.9g; _uetsid=ed140050d5dc11ec92de8f71f3f33174; _uetvid=35a60e10a9d911ecba7887f7ee7835a7; __hssc=160523682.8.1652893892893; intercom-session-gwbpci68=QmpwRGp1ZWZQZ0VUdUhWdGt5YlF4UnU0S2s1Mk0zeDlTVHhCK3B6aXpQL3d0L1lnZEZCaDJEYWNua2Y4OVBQNy0tajhPUmtMeUdsdVExKzBvTitnbTZrdz09--953a40817238f3c8512d67c0b0109b9933fac7b1"
+              }
+            ]
+          }
+        },
+        "name": "HTTP Request1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [
+          600,
+          340
+        ]
+      },
+      {
+        "parameters": {
+          "triggerTimes": {
+            "item": [
+              {
+                "hour": 5
+              }
+            ]
+          }
+        },
+        "name": "Cron",
+        "type": "n8n-nodes-base.cron",
+        "typeVersion": 1,
+        "position": [
+          420,
+          340
+        ]
+      }
+    ],
+    "connections": {
+      "Google Sheets": {
+        "main": [
+          [
+            {
+              "node": "SplitInBatches1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Google Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set1": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Date & Time": {
+        "main": [
+          [
+            {
+              "node": "Set1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SplitInBatches1": {
+        "main": [
+          [
+            {
+              "node": "Date & Time",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Item Lists1": {
+        "main": [
+          [
+            {
+              "node": "SplitInBatches1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request1": {
+        "main": [
+          [
+            {
+              "node": "Item Lists1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cron": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": true,
+    "settings": {
+      "timezone": "Europe/Madrid",
+      "saveExecutionProgress": true,
+      "saveManualExecutions": true
+    },
+    "id": 2
+  }
